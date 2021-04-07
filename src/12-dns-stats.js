@@ -20,8 +20,33 @@
  * }
  *
  */
-function getDNSStats(/* domains */) {
-  throw new Error('Not implemented');
+function DNSHandler (dns) {
+  const dnsArr = dns.split('.');
+  let result = [];
+  if (dnsArr.length === 2) {
+    result = [`.${dnsArr[dnsArr.length - 1]}`, `.${dnsArr[dnsArr.length - 1]}.${dnsArr[dnsArr.length - 2]}`];
+  } else {
+    result = [`.${dnsArr[dnsArr.length - 1]}`, `.${dnsArr[dnsArr.length - 1]}.${dnsArr[dnsArr.length - 2]}`, `.${dnsArr.reverse().join('.')}`];
+  }
+  return result;
+}
+
+function getDNSStats(domains) {
+  const allDns = [];
+  for (let i = 0; i < domains.length; i++) {
+    allDns.push(DNSHandler(domains[i]));
+  }
+  const result = {};
+  for (let i = 0; i < allDns.length; i++) {
+    for (let j = 0; j < allDns[i].length; j++) {
+      if (Object.prototype.hasOwnProperty.call(result, allDns[i][j])) {
+        result[allDns[i][j]] += 1;
+      } else {
+        result[allDns[i][j]] = 1;
+      }
+    }
+  }
+  return result;
 }
 
 module.exports = getDNSStats;
